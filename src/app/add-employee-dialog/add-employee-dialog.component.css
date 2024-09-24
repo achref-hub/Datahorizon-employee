@@ -1,0 +1,10 @@
+.red-button {
+    color: white !important; /* Ensure text color stays white */
+    background-color: red !important; /* Enforce red background */
+  }
+  
+  .green-button {
+    color: white !important; /* Ensure text color stays white */
+    background-color: green !important; /* Enforce green background */
+  }
+  

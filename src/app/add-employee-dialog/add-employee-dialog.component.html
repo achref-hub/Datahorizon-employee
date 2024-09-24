@@ -27,7 +27,8 @@
     </div>
   </mat-dialog-content>
   <mat-dialog-actions>
-    <button mat-button (click)="dialogRef.close()">Cancel</button>
-    <button mat-button (click)="dialogRef.close(employee)" [disabled]="!employeeForm.valid">Save</button>
+    <button mat-button class="red-button" (click)="dialogRef.close()">Cancel</button>
+    <button mat-button class="green-button" (click)="dialogRef.close(employee)" [disabled]="!employeeForm.valid">Save</button>
   </mat-dialog-actions>
+  
 </form>

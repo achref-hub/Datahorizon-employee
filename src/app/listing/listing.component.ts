@@ -1,95 +1,84 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { MasterService } from '../service/master.service';
-import { ToastrService } from 'ngx-toastr'
-import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Subject } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { EmployeeService } from '../service/master.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AddEmployeeDialogComponent } from '../add-employee-dialog/add-employee-dialog.component';
+
+interface Employee {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  age: number;
+  salary: string;
+  contactNumber: string;
+}
 
 @Component({
-  selector: 'app-listing',
+  selector: 'app-employee-list',
   templateUrl: './listing.component.html',
   styleUrls: ['./listing.component.css']
 })
-export class ListingComponent implements OnInit {
+export class EmployeeListComponent implements OnInit {
+  employees: Employee[] = [];
+  filteredEmployees: Employee[] = [];
+  searchTerm: string = '';
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  sortField: keyof Employee = 'id';
+  sortDirection: 'asc' | 'desc' = 'asc';
 
-  constructor(private service: MasterService, private alert: ToastrService, private router: Router, private modalservice: NgbModal) { }
-
-  @ViewChild('content') popupview !: ElementRef;
-
-  Invoiceheader: any;
-  pdfurl = '';
-  invoiceno: any;
-  dtoptions: DataTables.Settings = {};
-  dtTrigger:Subject<any>=new Subject<any>();
+  constructor(private employeeService: EmployeeService, public dialog: MatDialog) {}
 
   ngOnInit(): void {
-    this.dtoptions = {
-      pagingType: 'full_numbers',
-      searching:true,
-    //  paging:false
-    lengthChange:false,
-    language:{
-      searchPlaceholder:'Text Customer'
-    }
-
-    };
-    this.LoadInvoice();
+    this.loadEmployees();
   }
 
-  LoadInvoice() {
-    this.service.GetAllInvoice().subscribe(res => {
-      this.Invoiceheader = res;
-      this.dtTrigger.next(null);
+  loadEmployees() {
+    this.employeeService.getEmployees().subscribe((data: Employee[]) => {
+      this.employees = data;
+      this.filteredEmployees = data;
     });
   }
 
-  invoiceremove(invoiceno: any) {
-    if (confirm('Do you want to remove this Invoice :' + invoiceno)) {
-      this.service.RemoveInvoice(invoiceno).subscribe(res => {
-        let result: any;
-        result = res;
-        if (result.result == 'pass') {
-          this.alert.success('Removed Successfully.', 'Remove Invoice')
-          this.LoadInvoice();
-        } else {
-          this.alert.error('Failed to Remove.', 'Invoice');
-        }
-      });
-    }
-  }
-
-  Editinvoice(invoiceno: any) {
-    this.router.navigateByUrl('/editinvoice/' + invoiceno);
-  }
-  PrintInvoice(invoiceno: any) {
-    this.service.GenerateInvoicePDF(invoiceno).subscribe(res => {
-      let blob: Blob = res.body as Blob;
-      let url = window.URL.createObjectURL(blob);
-      window.open(url);
-    });
-  }
-  DownloadInvoice(invoiceno: any) {
-    this.service.GenerateInvoicePDF(invoiceno).subscribe(res => {
-      let blob: Blob = res.body as Blob;
-      let url = window.URL.createObjectURL(blob);
-
-      let a = document.createElement('a');
-      a.download = invoiceno;
-      a.href = url;
-      a.click();
-
+  get filteredEmployeesList(): Employee[] {
+    return this.employees.filter(employee => {
+      return (
+        employee.firstName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        employee.lastName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        employee.email.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
     });
   }
 
-  PreviewInvoice(invoiceno: any) {
-    this.invoiceno = invoiceno;
-    this.service.GenerateInvoicePDF(invoiceno).subscribe(res => {
-      let blob: Blob = res.body as Blob;
-      let url = window.URL.createObjectURL(blob);
-      this.pdfurl = url;
-      this.modalservice.open(this.popupview, { size: 'lg' });
-      //window.open(url);
+  sortData(field: keyof Employee) {
+    this.sortField = field;
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    this.filteredEmployees.sort((a, b) => {
+      if (a[field] < b[field]) return this.sortDirection === 'asc' ? -1 : 1;
+      if (a[field] > b[field]) return this.sortDirection === 'asc' ? 1 : -1;
+      return 0;
     });
   }
 
+  deleteEmployee(id: number) {
+    this.employees = this.employees.filter(employee => employee.id !== id);
+    this.filteredEmployees = this.filteredEmployees.filter(employee => employee.id !== id);
+  }
+
+  addEmployee(): void {
+    const dialogRef = this.dialog.open(AddEmployeeDialogComponent, {
+      width: '400px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const newEmployee: Employee = {
+          id: this.employees.length + 1,
+          ...result
+        };
+        this.employees.push(newEmployee);
+        this.filteredEmployees = [...this.employees];
+      }
+    });
+  }
 }

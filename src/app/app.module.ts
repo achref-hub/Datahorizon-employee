@@ -1,37 +1,34 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { ListingComponent } from './listing/listing.component';
-import { CreateinvoiceComponent } from './createinvoice/createinvoice.component';
-import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { ToastrModule } from 'ngx-toastr';
-import { RatingComponent } from './rating/rating.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer'
-import {DataTablesModule} from 'angular-datatables'
+import { FormsModule } from '@angular/forms';
+import { NgxPaginationModule } from 'ngx-pagination'; 
+import { MatDialogModule } from '@angular/material/dialog';
 
+import { AppComponent } from './app.component';
+import { EmployeeService } from './service/master.service';
+import { AppRoutingModule } from './app-routing.module';
+import { EmployeeListComponent } from './listing/listing.component';
+import { AddEmployeeDialogComponent } from './add-employee-dialog/add-employee-dialog.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ListingComponent,
-    CreateinvoiceComponent,
-    RatingComponent
+    EmployeeListComponent,
+    AddEmployeeDialogComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    ReactiveFormsModule,
     HttpClientModule,
-    ToastrModule.forRoot(),
-    NgbModule,
-    NgxExtendedPdfViewerModule,
-    DataTablesModule
+    FormsModule,
+    NgxPaginationModule,
+    MatDialogModule,
+    BrowserAnimationsModule
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [EmployeeService],
+  bootstrap: [AppComponent],
+  entryComponents: [AddEmployeeDialogComponent]
 })
 export class AppModule { }

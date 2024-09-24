@@ -1,0 +1,33 @@
+<h2 mat-dialog-title>Add New Employee</h2>
+<form #employeeForm="ngForm">
+  <mat-dialog-content>
+    <div class="form-group">
+      <label for="firstName">First Name</label>
+      <input id="firstName" name="firstName" class="form-control" [(ngModel)]="employee.firstName" required />
+    </div>
+    <div class="form-group">
+      <label for="lastName">Last Name</label>
+      <input id="lastName" name="lastName" class="form-control" [(ngModel)]="employee.lastName" required />
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input id="email" name="email" class="form-control" [(ngModel)]="employee.email" required />
+    </div>
+    <div class="form-group">
+      <label for="age">Age</label>
+      <input id="age" name="age" type="number" class="form-control" [(ngModel)]="employee.age" required />
+    </div>
+    <div class="form-group">
+      <label for="salary">Salary</label>
+      <input id="salary" name="salary" class="form-control" [(ngModel)]="employee.salary" required />
+    </div>
+    <div class="form-group">
+      <label for="contactNumber">Contact Number</label>
+      <input id="contactNumber" name="contactNumber" class="form-control" [(ngModel)]="employee.contactNumber" required />
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-button (click)="dialogRef.close()">Cancel</button>
+    <button mat-button (click)="dialogRef.close(employee)" [disabled]="!employeeForm.valid">Save</button>
+  </mat-dialog-actions>
+</form>
